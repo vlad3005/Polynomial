@@ -8,45 +8,47 @@ public:
     Polynomial() {}
 
     Polynomial(const Term& term) {
-        terms.addTerm(term.coefficient, term.exponent);
+        addTerm(term.coefficient, term.exponent);
     }
 
-    //void addTerm(int coefficient, int exponent) {
-    //    if (coefficient == 0) return;
-    //    Term term = Term(coefficient, exponent);
-    //    Node* newNode = new Node(coefficient, exponent);
-    //    if (!terms.head || terms.head->term.exponent < exponent) {
-    //        terms.pushFront(term);
-    //    }
+    void addTerm(int coefficient, int exponent) {
+        if (coefficient != 0) {
+            Node* newNode = new Node(coefficient, exponent);
+            Term newTerm = Term(coefficient, exponent);
+            if (!terms.head || terms.head->term.exponent < exponent) {
+                terms.pushFront(newTerm);
+            }
+            else {
+                Node* current = terms.head;
+                Node* prev = nullptr;
+                while (current && current->term.exponent > exponent) {
+                    prev = current;
+                    current = current->next;
+                }
 
-    //    Node* current = head;
-    //    Node* prev = nullptr;
-    //    while (current && current->term.exponent > exponent) {
-    //        prev = current;
-    //        current = current->next;
-    //    }
-
-    //    if (current && current->term.exponent == exponent) {
-    //        current->term.coefficient += coefficient;
-    //        if (current->term.coefficient == 0) {
-    //            if (prev) prev->next = current->next;
-    //            else head = current->next;
-    //            delete current;
-    //        }
-    //        delete newNode;
-    //    }
-    //    else {
-    //        newNode->next = current;
-    //        if (prev) prev->next = newNode;
-    //    }
-    //}
+                if (current && current->term.exponent == exponent) {
+                    current->term.coefficient += coefficient;
+                    if (current->term.coefficient == 0) {
+                        if (prev) { prev->next = current->next; }
+                        else { terms.head = current->next; }
+                        delete current;
+                    }
+                    delete newNode;
+                }
+                else {
+                    newNode->next = current;
+                    if (prev) prev->next = newNode;
+                }
+            }
+        }
+    }
 
     Polynomial& operator=(const Polynomial& other) {
         if (this == &other) return *this;
         terms.clear();
         Node* current = other.terms.head;
         while (current) {
-            terms.addTerm(current->term.coefficient, current->term.exponent);
+            addTerm(current->term.coefficient, current->term.exponent);
             current = current->next;
         }
         return *this;
@@ -56,12 +58,12 @@ public:
         Polynomial result;
         Node* current = terms.head;
         while (current) {
-            result.terms.addTerm(current->term.coefficient, current->term.exponent);
+            result.addTerm(current->term.coefficient, current->term.exponent);
             current = current->next;
         }
         current = other.terms.head;
         while (current) {
-            result.terms.addTerm(current->term.coefficient, current->term.exponent);
+            result.addTerm(current->term.coefficient, current->term.exponent);
             current = current->next;
         }
         return result;
@@ -71,12 +73,12 @@ public:
         Polynomial result;
         Node* current = terms.head;
         while (current) {
-            result.terms.addTerm(current->term.coefficient, current->term.exponent);
+            result.addTerm(current->term.coefficient, current->term.exponent);
             current = current->next;
         }
         current = other.terms.head;
         while (current) {
-            result.terms.addTerm(-current->term.coefficient, current->term.exponent);
+            result.addTerm(-current->term.coefficient, current->term.exponent);
             current = current->next;
         }
         return result;
@@ -86,7 +88,7 @@ public:
         Polynomial result;
         for (Node* term1 = terms.head; term1; term1 = term1->next) {
             for (Node* term2 = other.terms.head; term2; term2 = term2->next) {
-                result.terms.addTerm(term1->term.coefficient * term2->term.coefficient, term1->term.exponent + term2->term.exponent);
+                result.addTerm(term1->term.coefficient * term2->term.coefficient, term1->term.exponent + term2->term.exponent);
             }
         }
         return result;
@@ -97,17 +99,12 @@ public:
         while (remainder.terms.head && remainder.terms.head->term.exponent >= other.terms.head->term.exponent) {
             int coef = remainder.terms.head->term.coefficient / other.terms.head->term.coefficient;
             int exp = remainder.terms.head->term.exponent - other.terms.head->term.exponent;
-            Polynomial term;
-            term.terms.addTerm(coef, exp);
+            Polynomial term = Polynomial(Term(coef,exp));
             quotient = quotient + term;
             remainder = remainder - (term * other);
         }
         
         return quotient;
-    }
-
-    void addTerm(int coefficient, int exponent) {
-        terms.addTerm(coefficient, exponent);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Polynomial& poly) {

@@ -1,9 +1,4 @@
 ﻿#include <iostream>
-
-
-
-
-// Класс для представления многочлена
 #include "Polynomial.h"
 
 int main() {

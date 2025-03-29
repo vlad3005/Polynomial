@@ -1,6 +1,5 @@
 ﻿#include "Term.h"
 
-
 class Node {
 public:
     Term term;
@@ -70,35 +69,5 @@ public:
             }
         }
     }
-
-    void addTerm(int coefficient, int exponent) {
-        if (coefficient == 0) return;
-        Node* newNode = new Node(coefficient, exponent);
-        if (!head || head->term.exponent < exponent) {
-            newNode->next = head;
-            head = newNode;
-            return;
-        }
-
-        Node* current = head;
-        Node* prev = nullptr;
-        while (current && current->term.exponent > exponent) {
-            prev = current;
-            current = current->next;
-        }
-
-        if (current && current->term.exponent == exponent) {
-            current->term.coefficient += coefficient;
-            if (current->term.coefficient == 0) {
-                if (prev) prev->next = current->next;
-                else head = current->next;
-                delete current;
-            }
-            delete newNode;
-        }
-        else {
-            newNode->next = current;
-            if (prev) prev->next = newNode;
-        }
-    }
 };
+
